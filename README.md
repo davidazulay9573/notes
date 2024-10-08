@@ -13,9 +13,6 @@ notes/
 ## Prerequisites
 
 Make sure you have the following installed on your system:
-
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
 - [Android Studio](https://developer.android.com/studio) (for the Android app)
 
 ## Running the Project
@@ -35,7 +32,7 @@ Navigate to the server directory and start the server:
 
 ```bash
 cd notes-server
-docker-compose up --build
+sudo docker-compose up --build
 ```
 
 - The server will be accessible at `http://<your-ip-address>:8080`.
@@ -52,15 +49,8 @@ docker-compose up --build
    ```
 
 5. Open `java/com/example/notes/network/api/RetrofitClient.kt`.
-
-## Test the Application
-
-- Once both the server and the Android app are running, you can use the app to create, update, and delete notes. Ensure that the server is running to handle the requests from the app.
-
-## Contributing
-
-Contributions are welcome! Feel free to submit issues or pull requests.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+  and edit this line with your ip address
+   ``` 
+     private const val BASE_URL = "http://172.31.138.115:3001api"
+   ```
+6. Build and run the app by clicking the `Run` button on MainActivity class.
