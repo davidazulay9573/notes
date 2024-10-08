@@ -19,6 +19,13 @@ class LocalDB(context: Context) : SQLiteOpenHelper(context, "notes.db", null, 2)
                     isPendingDelete INTEGER DEFAULT 0
                 )
             """)
+
+            db.execSQL("""
+                CREATE TABLE actions (
+                    noteId TEXT NOT NULL,
+                    type TEXT NOT NULL
+                )
+            """)
         } catch (e: SQLiteException) {
             throw DatabaseException("Error creating notes table", e)
         }

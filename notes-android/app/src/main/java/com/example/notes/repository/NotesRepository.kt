@@ -1,17 +1,21 @@
 package com.example.notes.repository
 
+import android.database.sqlite.SQLiteException
+import com.example.notes.db.ActionsController
 import com.example.notes.db.NotesController
+import com.example.notes.model.Action
 import com.example.notes.model.Note
 import com.example.notes.network.api.NoteService
 
 class NotesRepository(
-    private val apiNotes: NoteService,
-    private val localNotes: NotesController,
+    private val apiNotes : NoteService,
+    private val localNotes : NotesController,
+    private val localActions : ActionsController,
     private val isOnline: () -> Boolean
 ) {
 
-    suspend fun getAllNotes(): List<Note> {
-        return localNotes.getAll().filter { note -> !note.isPendingDelete };
+    fun getAllNotes(): List<Note> {
+        return localNotes.getAll();
     }
 
     suspend fun addNote(note: Note) {
@@ -20,10 +24,12 @@ class NotesRepository(
                 val noteServer = apiNotes.create(note);
                 localNotes.insert(noteServer)
             }else {
-                localNotes.insert(note.copy(isPending = true))
+                val noteId = localNotes.insert(note)
+                localActions.insert(Action(noteId, "insert" ))
             }
         }catch (e : Exception){
-            localNotes.insert(note.copy(isPending = true))
+            val noteId = localNotes.insert(note)
+            localActions.insert(Action(noteId, "insert" ))
         }
     }
 
@@ -33,10 +39,14 @@ class NotesRepository(
                 apiNotes.update(note.id, note)
                 localNotes.update(note)
             }else {
-                localNotes.update(note.copy(isPendingUpdate = true))
+                localNotes.update(note)
+                localActions.insert(Action(note.id, "update"))
             }
         }catch (e : Exception){
-            localNotes.update(note.copy(isPendingUpdate = true))
+            localNotes.update(note)
+            localActions.insert(Action(note.id, "update"))
+        }catch (e : SQLiteException){
+            throw NotesRepositoryException("", e)
         }
     }
 
@@ -46,37 +56,46 @@ class NotesRepository(
                 apiNotes.delete(id)
                 localNotes.delete(id)
             }else {
-                localNotes.markPendingDelete(id)
+                localNotes.delete(id)
+                localActions.insert(Action(id, "delete"))
             }
         }catch (e : Exception){
-            localNotes.markPendingDelete(id)
+            localNotes.delete(id)
+            localActions.insert(Action(id, "delete"))
         }
     }
 
     suspend fun syncNotes() {
         if (isOnline()) {
-            val pendingDeleteNotes = localNotes.getPendingDeleteNotes()
-            pendingDeleteNotes.forEach { note ->
-                if (!note.isPending){
-                    apiNotes.delete(note.id)
-                }
-                localNotes.delete(note.id)
-            }
+            val actions: List<Action> = localActions.getAll()
 
-            val pendingUpdateNotes = localNotes.getPendingUpdateNotes()
-            pendingUpdateNotes.forEach { note ->
-                if (!note.isPending) {
-                    apiNotes.update(note.id, note)
-                }
-                localNotes.update(note.copy(isPendingUpdate = false))
-            }
+            actions.forEach { action ->
+                try {
+                    when (action.type) {
+                        "insert" -> {
+                            val note = localNotes.get(action.noteId)
+                            note?.let {
+                                val noteServer = apiNotes.create(it)
+                                localNotes.update(noteServer)
+                            }
+                        }
+                        "update" -> {
+                            val note = localNotes.get(action.noteId)
+                            note?.let {
+                                apiNotes.update(it.id, it)
+                            }
+                        }
+                        "delete" -> {
+                            apiNotes.delete(action.noteId)
+                        }
+                    }
+                    localActions.deleteAll()
+                } catch (e: Exception) {
 
-            val pendingNotes = localNotes.getPendingNotes()
-            pendingNotes.forEach { note ->
-                    val serverNote = apiNotes.create(note)
-                    localNotes.delete(note.id)
-                    localNotes.insert(serverNote)
+                    e.printStackTrace()
+                }
             }
         }
     }
+
 }

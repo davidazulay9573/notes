@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.example.notes.db.ActionsController
 import com.example.notes.db.LocalDB
 import com.example.notes.db.DatabaseException
 import com.example.notes.db.NotesController
@@ -29,9 +30,10 @@ class MainActivity : ComponentActivity() {
 
         val localDB = LocalDB(this)
         val notesController = NotesController(localDB)
+        val actionsController = ActionsController(localDB)
 
         val networkUtils = NetworkUtils(this)
-        val notesRepository = NotesRepository(RetrofitClient.noteService, notesController, { networkUtils.isOnline() })
+        val notesRepository = NotesRepository(RetrofitClient.noteService, notesController, actionsController, { networkUtils.isOnline() })
 
         val handleDBError: (DatabaseException) -> Unit = { exception ->
             Toast.makeText(this, exception.message ?: "An error occurred", Toast.LENGTH_SHORT).show()

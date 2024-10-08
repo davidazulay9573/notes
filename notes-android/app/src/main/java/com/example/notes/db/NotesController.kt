@@ -6,12 +6,13 @@ import com.example.notes.model.Note
 
 class NotesController(private val localDB: LocalDB) {
 
-    fun insert(note: Note)  {
+    fun insert(note: Note) : String  {
         val db = localDB.writableDatabase
         try {
             val noteToInsert = if (note.id == "0") note.copy(id = generateLocalId()) else note
             val contentValues = noteToContentValue(noteToInsert)
             db.insertOrThrow("notes", null, contentValues)
+            return noteToInsert.id;
         } catch (e: SQLiteException) {
             throw DatabaseException("Failed to insert note", e)
         } finally {
@@ -53,63 +54,6 @@ class NotesController(private val localDB: LocalDB) {
         }
     }
 
-    fun getPendingNotes(): List<Note> {
-        val db = localDB.readableDatabase
-        val notes = mutableListOf<Note>()
-        try {
-            val cursor = db.rawQuery("SELECT * FROM notes WHERE isPending = 1", null)
-            cursor.use {
-                while (it.moveToNext()) {
-                    val note = cursorToNote(it)
-                    notes.add(note)
-                }
-            }
-            return notes
-        } catch (e: SQLiteException) {
-            throw DatabaseException("Failed to retrieve pending notes", e)
-        } finally {
-            db.close()
-        }
-    }
-
-    fun getPendingDeleteNotes(): List<Note> {
-        val db = localDB.readableDatabase
-        val notes = mutableListOf<Note>()
-        try {
-            val cursor = db.rawQuery("SELECT * FROM notes WHERE isPendingDelete = 1", null)
-            cursor.use {
-                while (it.moveToNext()) {
-                    val note = cursorToNote(it)
-                    notes.add(note)
-                }
-            }
-            return notes
-        } catch (e: SQLiteException) {
-            throw DatabaseException("Failed to retrieve notes pending delete", e)
-        } finally {
-            db.close()
-        }
-    }
-
-    fun getPendingUpdateNotes(): List<Note> {
-        val db = localDB.readableDatabase
-        val notes = mutableListOf<Note>()
-        try {
-            val cursor = db.rawQuery("SELECT * FROM notes WHERE isPendingUpdate = 1", null)
-            cursor.use {
-                while (it.moveToNext()) {
-                    val note = cursorToNote(it)
-                    notes.add(note)
-                }
-            }
-            return notes
-        } catch (e: SQLiteException) {
-            throw DatabaseException("Failed to retrieve notes pending update", e)
-        } finally {
-            db.close()
-        }
-    }
-
     fun update(note: Note) {
         val db = localDB.writableDatabase
         try {
@@ -133,23 +77,6 @@ class NotesController(private val localDB: LocalDB) {
         }
     }
 
-    fun markPendingDelete(id: String) {
-        val db = localDB.writableDatabase
-        try {
-            val contentValues = ContentValues().apply {
-                put("isPendingDelete", 1)
-            }
-
-            db.update("notes", contentValues, "id = ?", arrayOf(id))
-
-        } catch (e: SQLiteException) {
-            throw DatabaseException("Error marking note as pending delete", e)
-        } finally {
-            db.close()
-        }
-    }
-
-
     /* ------------------------------------- */
     private fun noteToContentValue(note: Note): ContentValues {
         return ContentValues().apply {
@@ -167,9 +94,9 @@ class NotesController(private val localDB: LocalDB) {
         val title = cursor.getString(cursor.getColumnIndexOrThrow("title"))
         val description = cursor.getString(cursor.getColumnIndexOrThrow("description"))
         val isPending = cursor.getInt(cursor.getColumnIndexOrThrow("isPending")) == 1
-        val isPendingDelete = cursor.getInt(cursor.getColumnIndexOrThrow("isPendingDelete")) == 1 // Retrieve isPendingDelete
-        val isPendingUpdate = cursor.getInt(cursor.getColumnIndexOrThrow("isPendingUpdate")) == 1 // Retrieve isPendingUpdate
-        return Note(id, title, description, isPending, isPendingDelete, isPendingUpdate) // Include all fields
+        val isPendingDelete = cursor.getInt(cursor.getColumnIndexOrThrow("isPendingDelete")) == 1
+        val isPendingUpdate = cursor.getInt(cursor.getColumnIndexOrThrow("isPendingUpdate")) == 1
+        return Note(id, title, description, isPending, isPendingDelete, isPendingUpdate)
     }
 
     private fun generateLocalId(): String {
