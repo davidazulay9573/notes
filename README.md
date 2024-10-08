@@ -49,7 +49,7 @@ sudo docker-compose up --build
    ```
 
 5. Open `java/com/example/notes/network/api/RetrofitClient.kt`.
-  and edit this line with your ip address
+  and edit the following line with your IP address:
    ``` 
      private const val BASE_URL = "http://172.31.138.115:3001/api"
    ```
