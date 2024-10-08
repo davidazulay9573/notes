@@ -1,6 +1,6 @@
 # Notes App
 
-A simple Notes application built with an Android client and a server.
+A Notes application built with an Android client and a server.A Notes application with an Android client and server that supports offline functionality. Users can create, update, and delete notes even without internet access, with automatic synchronization to the server when connectivity is restored.
 
 ## Project Structure
 
@@ -40,7 +40,7 @@ sudo docker-compose up --build
 ### 3. Run the Android App
 
 1. Open Android Studio.
-2. Select `Open an Existing Project`.
+2. Select `Open`.
 3. Navigate to `notes/notes-android` and open it.
 4. Open `res/xml/network_security_config.xml` and edit the following line with your IP address:
 
