@@ -83,9 +83,6 @@ class NotesController(private val localDB: LocalDB) {
             put("id", note.id)
             put("title", note.title)
             put("description", note.description)
-            put("isPending", if (note.isPending) 1 else 0)
-            put("isPendingDelete", if (note.isPendingDelete) 1 else 0)
-            put("isPendingUpdate", if (note.isPendingUpdate) 1 else 0)
         }
     }
 
@@ -93,10 +90,7 @@ class NotesController(private val localDB: LocalDB) {
         val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
         val title = cursor.getString(cursor.getColumnIndexOrThrow("title"))
         val description = cursor.getString(cursor.getColumnIndexOrThrow("description"))
-        val isPending = cursor.getInt(cursor.getColumnIndexOrThrow("isPending")) == 1
-        val isPendingDelete = cursor.getInt(cursor.getColumnIndexOrThrow("isPendingDelete")) == 1
-        val isPendingUpdate = cursor.getInt(cursor.getColumnIndexOrThrow("isPendingUpdate")) == 1
-        return Note(id, title, description, isPending, isPendingDelete, isPendingUpdate)
+        return Note(id, title, description)
     }
 
     private fun generateLocalId(): String {
