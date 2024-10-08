@@ -1,6 +1,6 @@
 # Notes App
 
-A Notes application built with an Android client and a server.A Notes application with an Android client and server that supports offline functionality. Users can create, update, and delete notes even without internet access, with automatic synchronization to the server when connectivity is restored.
+A Notes application with an Android client and server that supports offline functionality. Users can create, update, and delete notes even without internet access, with automatic synchronization to the server when connectivity is restored.
 
 ## Project Structure
 
