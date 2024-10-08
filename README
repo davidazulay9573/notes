@@ -1,6 +1,6 @@
 # Notes App
 
-A simple Notes application built with an Android client and a server
+A simple Notes application built with an Android client and a server.
 
 ## Project Structure
 
@@ -14,6 +14,8 @@ notes/
 
 Make sure you have the following installed on your system:
 
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 - [Android Studio](https://developer.android.com/studio) (for the Android app)
 
 ## Running the Project
@@ -27,13 +29,13 @@ git clone https://github.com/davidazulay9573/notes.git
 cd notes
 ```
 
-### 2. You can run the Server with Docker Compose
+### 2. Run the Server with Docker Compose
 
 Navigate to the server directory and start the server:
 
 ```bash
 cd notes-server
-sudo docker-compose up --build
+docker-compose up --build
 ```
 
 - The server will be accessible at `http://<your-ip-address>:8080`.
@@ -41,16 +43,17 @@ sudo docker-compose up --build
 ### 3. Run the Android App
 
 1. Open Android Studio.
-2. Select `Open`.
+2. Select `Open an Existing Project`.
 3. Navigate to `notes/notes-android` and open it.
-4. Open `res/xml/network_security_config.xml`
+4. Open `res/xml/network_security_config.xml` and edit the following line with your IP   address:
 
-   and edit this line with your ip address
+   ```xml
+   <domain includeSubdomains="true">172.31.138.115</domain>
+   ```
 
-   `<domain includeSubdomains="true">172.31.138.115</domain>`
-5. Open `java/com/example/notes/network/api/RetrorfitClient.kt`
-
-   and edit this line with your ip address
-
-   ` private const val BASE_URL = "http://172.31.138.115:3001/api/"`
+5. Open `java/com/example/notes/network/api/RetrofitClient.kt`.
+  and edit this line with your ip address
+   ``` 
+     private const val BASE_URL = "http://172.31.138.115:3001api"
+   ```
 4. Build and run the app by clicking the `Run` button on MainActivity class.
