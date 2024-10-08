@@ -35,7 +35,7 @@ cd notes-server
 sudo docker-compose up --build
 ```
 
-- The server will be accessible at `http://<your-ip-address>:8080`.
+- The server will be accessible at `http://<your-ip-address>:3001`.
 
 ### 3. Run the Android App
 
@@ -51,6 +51,6 @@ sudo docker-compose up --build
 5. Open `java/com/example/notes/network/api/RetrofitClient.kt`.
   and edit this line with your ip address
    ``` 
-     private const val BASE_URL = "http://172.31.138.115:3001api"
+     private const val BASE_URL = "http://172.31.138.115:3001/api"
    ```
 6. Build and run the app by clicking the `Run` button on MainActivity class.
