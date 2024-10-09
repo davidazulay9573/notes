@@ -5,7 +5,7 @@ import retrofit2.http.*
 
 interface NoteService {
     @GET("notes")
-    suspend fun getAllNotes(): List<Note>
+    suspend fun getAll(): List<Note>
 
     @POST("notes")
     suspend fun create(@Body note: Note) : Note

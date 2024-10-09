@@ -23,7 +23,8 @@ class LocalDB(context: Context) : SQLiteOpenHelper(context, "notes.db", null, 2)
             db.execSQL("""
                 CREATE TABLE actions (
                     noteId TEXT NOT NULL,
-                    type TEXT NOT NULL
+                    type TEXT NOT NULL,
+                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
         } catch (e: SQLiteException) {

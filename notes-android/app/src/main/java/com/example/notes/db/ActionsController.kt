@@ -35,7 +35,7 @@ class ActionsController(private val localDB: LocalDB) {
         val db = localDB.readableDatabase
         val actions = mutableListOf<Action>()
         try {
-            val cursor = db.rawQuery("SELECT * FROM actions", null)
+            val cursor = db.rawQuery("SELECT * FROM actions ORDER BY created_at ASC", null)
             cursor.use {
                 while (it.moveToNext()) {
                     val note = cursorToAction(it)

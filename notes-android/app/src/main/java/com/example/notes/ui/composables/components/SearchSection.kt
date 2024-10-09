@@ -47,13 +47,13 @@ fun SearchSection(
             Spacer(modifier = Modifier.width(16.dp))
 
             RadioButton(
-                selected = searchByOption == "content",
+                selected = searchByOption == "description",
                 onClick = {
-                    searchByOption = "content"
+                    searchByOption = "description"
                     onSearch(searchQuery, searchByOption)
                 }
             )
-            Text("Search by Content")
+            Text("Search by Description")
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.notes.repository
 
-import android.database.sqlite.SQLiteException
 import com.example.notes.db.ActionsController
 import com.example.notes.db.NotesController
 import com.example.notes.model.Action
@@ -45,8 +44,6 @@ class NotesRepository(
         }catch (e : Exception){
             localNotes.update(note)
             localActions.insert(Action(note.id, "update"))
-        }catch (e : SQLiteException){
-            throw NotesRepositoryException("", e)
         }
     }
 
@@ -91,7 +88,6 @@ class NotesRepository(
                     }
                     localActions.deleteAll()
                 } catch (e: Exception) {
-
                     e.printStackTrace()
                 }
             }
