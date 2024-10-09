@@ -10,13 +10,12 @@ import com.example.notes.model.Note
 
 @Composable
 fun EditNoteScreen(navController: NavController, viewModel: NotesViewModel) {
-    val notes by viewModel.notes.collectAsState()
     val backStackEntry = navController.currentBackStackEntryAsState().value
     val noteId = backStackEntry?.arguments?.getString("noteId") ?: return
+    val note = viewModel.get(noteId)
 
-    val note: Note? = notes.find { it.id == noteId }
     if (note == null) {
-        Text("note with id:${noteId} not found")
+        Text("note with id: $noteId not found")
         return
     }
 

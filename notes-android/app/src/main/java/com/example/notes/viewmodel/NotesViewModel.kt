@@ -1,16 +1,16 @@
 package com.example.notes.viewmodel
 
 import com.example.notes.model.Note
-import com.example.notes.repository.NotesRepository
+import com.example.notes.data.synchronized_data.SynchronizedNotes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.notes.db.DatabaseException
+import com.example.notes.data.localdb.DatabaseException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class NotesViewModel(
-    private val notesRepository: NotesRepository,
+    private val notesRepository: SynchronizedNotes,
     private val handleDBError: (e: DatabaseException) -> Unit
 ) : ViewModel() {
 
@@ -21,14 +21,8 @@ class NotesViewModel(
         fetchNotes()
     }
 
-    private fun fetchNotes() {
-        viewModelScope.launch {
-            try {
-                _notes.value = notesRepository.getAllNotes()
-            } catch (e: DatabaseException) {
-                handleDBError(e)
-            }
-        }
+    fun get(id: String): Note? {
+        return _notes.value.find { it.id == id }
     }
 
     fun add(title: String, description: String) {
@@ -86,6 +80,18 @@ class NotesViewModel(
                 notesRepository.syncNotes()
             } catch (e: Exception) {
 
+            }
+        }
+    }
+
+    /* ------------------------------ */
+
+    private fun fetchNotes() {
+        viewModelScope.launch {
+            try {
+                _notes.value = notesRepository.getAllNotes()
+            } catch (e: DatabaseException) {
+                handleDBError(e)
             }
         }
     }

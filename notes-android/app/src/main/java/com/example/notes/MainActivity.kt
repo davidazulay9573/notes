@@ -10,13 +10,13 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.notes.db.ActionsController
-import com.example.notes.db.LocalDB
-import com.example.notes.db.DatabaseException
-import com.example.notes.db.NotesController
-import com.example.notes.network.NetworkUtils
-import com.example.notes.network.api.RetrofitClient
-import com.example.notes.repository.NotesRepository
+import com.example.notes.data.localdb.ActionsController
+import com.example.notes.data.localdb.LocalDB
+import com.example.notes.data.localdb.DatabaseException
+import com.example.notes.data.localdb.NotesController
+import com.example.notes.utils.NetworkUtils
+import com.example.notes.data.api.RetrofitClient
+import com.example.notes.data.synchronized_data.SynchronizedNotes
 import com.example.notes.viewmodel.NotesViewModel
 
 class MainActivity : ComponentActivity() {
@@ -33,14 +33,13 @@ class MainActivity : ComponentActivity() {
         val actionsController = ActionsController(localDB)
 
         val networkUtils = NetworkUtils(this)
-        val notesRepository = NotesRepository(RetrofitClient.noteService, notesController, actionsController, { networkUtils.isOnline() })
+        val synchronizedNotes = SynchronizedNotes(RetrofitClient.noteService, notesController, actionsController, { networkUtils.isOnline() })
 
         val handleDBError: (DatabaseException) -> Unit = { exception ->
             Toast.makeText(this, exception.message ?: "An error occurred", Toast.LENGTH_SHORT).show()
         }
 
-        notesViewModel = NotesViewModel(notesRepository, handleDBError)
-
+        notesViewModel = NotesViewModel(synchronizedNotes, handleDBError)
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         networkCallback = MyNetworkCallback(notesViewModel)
 

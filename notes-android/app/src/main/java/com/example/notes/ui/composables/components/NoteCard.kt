@@ -30,7 +30,7 @@ fun NoteCard(
     Card(
         onClick = onClick,
         modifier = modifier
-            .padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
+            .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
             .border(
                 width = 1.dp,
                 color = Color.Gray,

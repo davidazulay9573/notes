@@ -14,10 +14,10 @@ import com.example.notes.ui.composables.components.ConfirmationDialog
 
 @Composable
 fun NoteScreen(navController: NavController, viewModel: NotesViewModel) {
-    val notes by viewModel.notes.collectAsState()
+
     val backStackEntry = navController.currentBackStackEntryAsState().value
     val noteId = backStackEntry?.arguments?.getString("noteId") ?: return
-    val note = notes.find { it.id == noteId }
+    val note = viewModel.get(noteId)
 
     if (note == null) {
         Text("note with id: $noteId not found")
