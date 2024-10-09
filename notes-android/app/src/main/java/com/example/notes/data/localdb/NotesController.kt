@@ -6,78 +6,51 @@ import com.example.notes.model.Note
 
 class NotesController(private val localDB: LocalDB) {
 
-    fun insert(note: Note) : String  {
+    fun insert(note: Note): String {
         val db = localDB.writableDatabase
-        try {
-            val noteToInsert = if (note.id == "0") note.copy(id = generateLocalId()) else note
-            val contentValues = noteToContentValue(noteToInsert)
-            db.insertOrThrow("notes", null, contentValues)
-            return noteToInsert.id;
-        } catch (e: SQLiteException) {
-            throw DatabaseException("Failed to insert note", e)
-        } finally {
-            db.close()
-        }
+        val noteToInsert = if (note.id == "0") note.copy(id = generateLocalId()) else note
+        val contentValues = noteToContentValue(noteToInsert)
+        db.insertOrThrow("notes", null, contentValues)
+        db.close()
+        return noteToInsert.id
     }
 
     fun get(noteId: String): Note? {
         val db = localDB.readableDatabase
-        try {
-            val cursor = db.rawQuery("SELECT * FROM notes WHERE id = ?", arrayOf(noteId))
-            cursor.use {
-                if (!it.moveToFirst()) return null
-                return cursorToNote(it)
-            }
-        } catch (e: SQLiteException) {
-            throw DatabaseException("Failed to retrieve note with id: $noteId", e)
-        } finally {
-            db.close()
+        val cursor = db.rawQuery("SELECT * FROM notes WHERE id = ?", arrayOf(noteId))
+        cursor.use {
+            if (!it.moveToFirst()) return null
+            return cursorToNote(it)
         }
     }
 
     fun getAll(): List<Note> {
         val db = localDB.readableDatabase
         val notes = mutableListOf<Note>()
-        try {
-            val cursor = db.rawQuery("SELECT * FROM notes ORDER BY isPending DESC", null)
-            cursor.use {
-                while (it.moveToNext()) {
-                    val note = cursorToNote(it)
-                    notes.add(note)
-                }
+        val cursor = db.rawQuery("SELECT * FROM notes ORDER BY isPending DESC", null)
+        cursor.use {
+            while (it.moveToNext()) {
+                val note = cursorToNote(it)
+                notes.add(note)
             }
-            return notes
-        } catch (e: SQLiteException) {
-            throw DatabaseException("Failed to retrieve notes", e)
-        } finally {
-            db.close()
         }
+        db.close()
+        return notes
     }
 
     fun update(note: Note) {
         val db = localDB.writableDatabase
-        try {
-            val contentValues = noteToContentValue(note)
-            db.update("notes", contentValues, "id = ?", arrayOf(note.id))
-        } catch (e: SQLiteException) {
-            throw DatabaseException("Failed to update note with id: ${note.id}", e)
-        } finally {
-            db.close()
-        }
+        val contentValues = noteToContentValue(note)
+        db.update("notes", contentValues, "id = ?", arrayOf(note.id))
+        db.close()
     }
 
     fun delete(id: String) {
         val db = localDB.writableDatabase
-        try {
-            db.execSQL("DELETE FROM notes WHERE id = ?", arrayOf(id))
-        } catch (e: SQLiteException) {
-            throw DatabaseException("Failed to delete note with id: $id", e)
-        } finally {
-            db.close()
-        }
+        db.execSQL("DELETE FROM notes WHERE id = ?", arrayOf(id))
+        db.close()
     }
 
-    /* ------------------------------------- */
     private fun noteToContentValue(note: Note): ContentValues {
         return ContentValues().apply {
             put("id", note.id)
@@ -96,5 +69,4 @@ class NotesController(private val localDB: LocalDB) {
     private fun generateLocalId(): String {
         return "local_${System.currentTimeMillis()}"
     }
-
 }

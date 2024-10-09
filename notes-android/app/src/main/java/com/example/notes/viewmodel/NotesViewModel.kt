@@ -4,14 +4,13 @@ import com.example.notes.model.Note
 import com.example.notes.data.synchronized_data.SynchronizedNotes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.notes.data.localdb.DatabaseException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class NotesViewModel(
     private val notesRepository: SynchronizedNotes,
-    private val handleDBError: (e: DatabaseException) -> Unit
+    private val handleError: (e: Exception) -> Unit
 ) : ViewModel() {
 
     private val _notes = MutableStateFlow<List<Note>>(emptyList())
@@ -31,8 +30,8 @@ class NotesViewModel(
                 val newNote = Note(title = title, description = description)
                 notesRepository.addNote(newNote)
                 fetchNotes()
-            } catch (e: DatabaseException) {
-                handleDBError(e)
+            } catch (e: Exception) {
+                handleError(e)
             }
         }
     }
@@ -42,8 +41,8 @@ class NotesViewModel(
             try {
                 notesRepository.updateNote(note)
                 fetchNotes()
-            } catch (e: DatabaseException) {
-                handleDBError(e)
+            } catch (e: Exception) {
+                handleError(e)
             }
         }
     }
@@ -53,8 +52,8 @@ class NotesViewModel(
             try {
                 notesRepository.deleteNote(id)
                 fetchNotes()
-            } catch (e: DatabaseException) {
-                handleDBError(e)
+            } catch (e: Exception) {
+                handleError(e)
             }
         }
     }
@@ -68,8 +67,8 @@ class NotesViewModel(
                     "description" -> allNotes.filter { note -> note.description.contains(searchQuery, ignoreCase = true) }
                     else -> allNotes
                 }
-            } catch (e: DatabaseException) {
-                handleDBError(e)
+            } catch (e: Exception) {
+                handleError(e)
             }
         }
     }
@@ -90,8 +89,8 @@ class NotesViewModel(
         viewModelScope.launch {
             try {
                 _notes.value = notesRepository.getAllNotes()
-            } catch (e: DatabaseException) {
-                handleDBError(e)
+            } catch (e: Exception) {
+                handleError(e)
             }
         }
     }

@@ -8,44 +8,28 @@ class ActionsController(private val localDB: LocalDB) {
 
     fun insert(action: Action) {
         val db = localDB.writableDatabase
-        try {
-            db.insert("actions", null, actionToContentValue(action))
-        } catch (e: SQLiteException) {
-            throw DatabaseException("Failed to insert action for noteId: ${action.noteId}", e)
-        } finally {
-            db.close()
-        }
+        db.insert("actions", null, actionToContentValue(action))
+        db.close()
     }
 
     fun deleteAll() {
         val db = localDB.writableDatabase
-        try {
-            db.execSQL("DELETE FROM actions")
-        } catch (e: SQLiteException) {
-            throw DatabaseException("Failed to delete all actions", e)
-        } finally {
-            db.close()
-        }
+        db.execSQL("DELETE FROM actions")
+        db.close()
     }
-
 
     fun getAll(): List<Action> {
         val db = localDB.readableDatabase
         val actions = mutableListOf<Action>()
-        try {
-            val cursor = db.rawQuery("SELECT * FROM actions ORDER BY created_at ASC", null)
-            cursor.use {
-                while (it.moveToNext()) {
-                    val note = cursorToAction(it)
-                    actions.add(note)
-                }
+        val cursor = db.rawQuery("SELECT * FROM actions ORDER BY created_at ASC", null)
+        cursor.use {
+            while (it.moveToNext()) {
+                val action = cursorToAction(it)
+                actions.add(action)
             }
-            return actions
-        } catch (e: SQLiteException) {
-            throw DatabaseException("Failed to retrieve actions", e)
-        } finally {
-            db.close()
         }
+        db.close()
+        return actions
     }
 
     private fun actionToContentValue(action: Action): ContentValues {
@@ -60,5 +44,4 @@ class ActionsController(private val localDB: LocalDB) {
         val type = cursor.getString(cursor.getColumnIndexOrThrow("type"))
         return Action(noteId, type)
     }
-
 }

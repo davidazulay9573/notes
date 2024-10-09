@@ -12,7 +12,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.notes.data.localdb.ActionsController
 import com.example.notes.data.localdb.LocalDB
-import com.example.notes.data.localdb.DatabaseException
 import com.example.notes.data.localdb.NotesController
 import com.example.notes.utils.NetworkUtils
 import com.example.notes.data.api.RetrofitClient
@@ -35,11 +34,11 @@ class MainActivity : ComponentActivity() {
         val networkUtils = NetworkUtils(this)
         val synchronizedNotes = SynchronizedNotes(RetrofitClient.noteService, notesController, actionsController, { networkUtils.isOnline() })
 
-        val handleDBError: (DatabaseException) -> Unit = { exception ->
+        val handleError: (Exception) -> Unit = { exception ->
             Toast.makeText(this, exception.message ?: "An error occurred", Toast.LENGTH_SHORT).show()
         }
 
-        notesViewModel = NotesViewModel(synchronizedNotes, handleDBError)
+        notesViewModel = NotesViewModel(synchronizedNotes, handleError)
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         networkCallback = MyNetworkCallback(notesViewModel)
 

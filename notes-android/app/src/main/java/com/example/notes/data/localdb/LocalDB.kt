@@ -28,7 +28,7 @@ class LocalDB(context: Context) : SQLiteOpenHelper(context, "notes.db", null, 2)
                 )
             """)
         } catch (e: SQLiteException) {
-            throw DatabaseException("Error creating notes table", e)
+            throw Exception("Error creating notes table", e)
         }
     }
 
@@ -37,7 +37,7 @@ class LocalDB(context: Context) : SQLiteOpenHelper(context, "notes.db", null, 2)
             db.execSQL("DROP TABLE IF EXISTS notes")
             onCreate(db)
         } catch (e: SQLiteException) {
-            throw DatabaseException("Error upgrading database from version $oldVersion to $newVersion", e)
+            throw Exception("Error upgrading database from version $oldVersion to $newVersion", e)
         }
     }
 }
