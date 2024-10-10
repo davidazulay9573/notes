@@ -13,6 +13,7 @@ notes/
 ## Prerequisites
 
 Make sure you have the following installed on your system:
+
 - [Android Studio](https://developer.android.com/studio) (for the Android app)
 
 ## Running the Project
@@ -48,9 +49,9 @@ sudo docker-compose up --build
    <domain includeSubdomains="true">172.31.138.115</domain>
    ```
 
-5. Open `java/com/example/notes/network/api/RetrofitClient.kt`.
-  and edit the following line with your IP address:
-   ``` 
+5. Open `java/com/example/notes/data/api/RetrorfitClient.kt`.
+   and edit the following line with your IP address:
+   ```
      private const val BASE_URL = "http://172.31.138.115:3001/api"
    ```
 6. Build and run the app by clicking the `Run` button on MainActivity class.

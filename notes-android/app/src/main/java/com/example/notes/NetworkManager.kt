@@ -33,6 +33,7 @@ class NetworkManager(private val context: Context, private val notesViewModel: N
                 networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
     }
 
+    /* ------------------ */
     private class SyncNotesCallback(private val notesViewModel: NotesViewModel) : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
