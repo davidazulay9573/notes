@@ -77,14 +77,14 @@ class NotesViewModel(
         viewModelScope.launch {
             try {
                 notesRepository.syncNotes()
+                fetchNotes()
             } catch (e: Exception) {
-
+                handleError(e)
             }
         }
     }
 
     /* ------------------------------ */
-
     private fun fetchNotes() {
         viewModelScope.launch {
             try {

@@ -1,7 +1,6 @@
 package com.example.notes.data.localdb
 
 import android.content.ContentValues
-import android.database.sqlite.SQLiteException
 import com.example.notes.model.Note
 
 class NotesController(private val localDB: LocalDB) {
@@ -51,6 +50,7 @@ class NotesController(private val localDB: LocalDB) {
         db.close()
     }
 
+    /* ------------------------------- */
     private fun noteToContentValue(note: Note): ContentValues {
         return ContentValues().apply {
             put("id", note.id)

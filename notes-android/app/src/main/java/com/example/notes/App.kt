@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -21,7 +22,8 @@ fun App(notesViewModel: NotesViewModel) {
     val navController = rememberNavController()
 
     Scaffold(
-        bottomBar = { NavBar(navController) }
+        bottomBar = { NavBar(navController) },
+        modifier = Modifier.padding(8.dp)
     ) { innerPadding ->
         Column(
             modifier = Modifier

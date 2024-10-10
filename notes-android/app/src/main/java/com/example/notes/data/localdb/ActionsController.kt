@@ -1,7 +1,6 @@
 package com.example.notes.data.localdb
 
 import android.content.ContentValues
-import android.database.sqlite.SQLiteException
 import com.example.notes.model.Action
 
 class ActionsController(private val localDB: LocalDB) {
@@ -21,7 +20,7 @@ class ActionsController(private val localDB: LocalDB) {
     fun getAll(): List<Action> {
         val db = localDB.readableDatabase
         val actions = mutableListOf<Action>()
-        val cursor = db.rawQuery("SELECT * FROM actions ORDER BY created_at ASC", null)
+        val cursor = db.rawQuery("SELECT * FROM actions ORDER BY createdAt ASC", null)
         cursor.use {
             while (it.moveToNext()) {
                 val action = cursorToAction(it)
@@ -32,6 +31,7 @@ class ActionsController(private val localDB: LocalDB) {
         return actions
     }
 
+    /* ----------------------------- */
     private fun actionToContentValue(action: Action): ContentValues {
         return ContentValues().apply {
             put("noteId", action.noteId)

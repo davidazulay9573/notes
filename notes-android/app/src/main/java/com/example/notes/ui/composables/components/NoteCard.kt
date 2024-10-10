@@ -22,7 +22,6 @@ fun NoteCard(
     onClick: () -> Unit,
     onDelete: (id: String) -> Unit,
     onEdit: () -> Unit,
-    onStarToggle: (note: Note) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }

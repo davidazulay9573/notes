@@ -12,15 +12,14 @@ class SynchronizedNotes(
     private val localActions : ActionsController,
     private val isOnline: () -> Boolean
 ) {
-
     fun getAllNotes(): List<Note> {
-        return localNotes.getAll();
+        return localNotes.getAll()
     }
 
     suspend fun addNote(note: Note) {
         try {
             if (isOnline()){
-                val noteServer = apiNotes.create(note);
+                val noteServer = apiNotes.create(note)
                 localNotes.insert(noteServer)
             }else {
                 val noteId = localNotes.insert(note)
@@ -73,7 +72,8 @@ class SynchronizedNotes(
                             val note = localNotes.get(action.noteId)
                             note?.let {
                                 val noteServer = apiNotes.create(it)
-                                localNotes.update(noteServer)
+                                localNotes.delete(action.noteId)
+                                localNotes.insert(noteServer)
                             }
                         }
                         "update" -> {
@@ -93,5 +93,4 @@ class SynchronizedNotes(
             }
         }
     }
-
 }

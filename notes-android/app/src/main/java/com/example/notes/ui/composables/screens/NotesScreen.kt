@@ -45,7 +45,6 @@ fun NotesScreen(navController: NavController, viewModel: NotesViewModel) {
                     note = note,
                     onClick = { navController.navigate("notes/${note.id}") },
                     onEdit = { navController.navigate("notes/${note.id}/edit") },
-                    onStarToggle = { updatedNote -> viewModel.update(updatedNote) },
                     onDelete = {
                         viewModel.delete(note.id)
                         navController.navigate("notes")
