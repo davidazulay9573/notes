@@ -11,9 +11,9 @@ class ActionsController(private val localDB: LocalDB) {
         db.close()
     }
 
-    fun deleteAll() {
+    fun delete(actionId: String) {
         val db = localDB.writableDatabase
-        db.execSQL("DELETE FROM actions")
+        db.delete("actions", "noteId=?", arrayOf(actionId))
         db.close()
     }
 

@@ -86,7 +86,7 @@ class SynchronizedNotes(
                             apiNotes.delete(action.noteId)
                         }
                     }
-                    localActions.deleteAll()
+                    localActions.delete(action.noteId)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
