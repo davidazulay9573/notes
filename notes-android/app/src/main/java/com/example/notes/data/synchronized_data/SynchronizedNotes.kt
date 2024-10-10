@@ -54,10 +54,14 @@ class SynchronizedNotes(
             }else {
                 localNotes.delete(id)
                 localActions.insert(Action(id, "deletes"))
+                localActions.delete(id, "inserts")
+                localActions.delete(id, "updates")
             }
         }catch (e : Exception){
             localNotes.delete(id)
             localActions.insert(Action(id, "deletes"))
+            localActions.delete(id, "inserts")
+            localActions.delete(id, "updates")
         }
     }
 
