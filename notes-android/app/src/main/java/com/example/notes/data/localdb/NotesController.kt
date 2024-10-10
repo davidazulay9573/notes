@@ -26,7 +26,7 @@ class NotesController(private val localDB: LocalDB) {
     fun getAll(): List<Note> {
         val db = localDB.readableDatabase
         val notes = mutableListOf<Note>()
-        val cursor = db.rawQuery("SELECT * FROM notes ORDER BY isPending DESC", null)
+        val cursor = db.rawQuery("SELECT * FROM notes", null)
         cursor.use {
             while (it.moveToNext()) {
                 val note = cursorToNote(it)

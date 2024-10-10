@@ -13,17 +13,27 @@ class LocalDB(context: Context) : SQLiteOpenHelper(context, "notes.db", null, 2)
                 CREATE TABLE notes (
                     id TEXT PRIMARY KEY NOT NULL,
                     title TEXT NOT NULL,
-                    description TEXT NOT NULL,
-                    isPending INTEGER DEFAULT 0,
-                    isPendingUpdate INTEGER DEFAULT 0,
-                    isPendingDelete INTEGER DEFAULT 0
+                    description TEXT NOT NULL
                 )
             """)
 
             db.execSQL("""
-                CREATE TABLE actions (
-                    noteId TEXT NOT NULL,
-                    type TEXT NOT NULL,
+                CREATE TABLE inserts (
+                    noteId TEXT PRIMARY KEY NOT NULL,
+                    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            db.execSQL("""
+                CREATE TABLE updates (
+                    noteId TEXT PRIMARY KEY NOT NULL,
+                    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            db.execSQL("""
+                CREATE TABLE deletes (
+                    noteId TEXT PRIMARY KEY NOT NULL,
                     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)

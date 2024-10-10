@@ -1,29 +1,41 @@
 package com.example.notes.data.localdb
 
 import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
 import com.example.notes.model.Action
 
 class ActionsController(private val localDB: LocalDB) {
 
     fun insert(action: Action) {
         val db = localDB.writableDatabase
-        db.insert("actions", null, actionToContentValue(action))
+        when (action.type) {
+            "inserts" -> {
+                db.insertWithOnConflict("inserts", null, actionToContentValue(action), SQLiteDatabase.CONFLICT_REPLACE)
+            }
+            "updates" -> {
+                db.insertWithOnConflict("updates", null, actionToContentValue(action), SQLiteDatabase.CONFLICT_REPLACE)
+            }
+            "deletes" -> {
+                db.insertWithOnConflict("deletes", null, actionToContentValue(action), SQLiteDatabase.CONFLICT_REPLACE)
+            }
+            else -> throw IllegalArgumentException("Unknown action type: ${action.type}")
+        }
         db.close()
     }
 
-    fun delete(actionId: String) {
+    fun delete(noteId : String, table : String) {
         val db = localDB.writableDatabase
-        db.delete("actions", "noteId=?", arrayOf(actionId))
+        db.delete(table, "noteId=?", arrayOf(noteId))
         db.close()
     }
 
-    fun getAll(): List<Action> {
+    fun getAll(table: String): List<String> {
         val db = localDB.readableDatabase
-        val actions = mutableListOf<Action>()
-        val cursor = db.rawQuery("SELECT * FROM actions ORDER BY createdAt ASC", null)
+        val actions = mutableListOf<String>()
+        val cursor = db.rawQuery("SELECT * FROM $table ORDER BY createdAt ASC", null)
         cursor.use {
             while (it.moveToNext()) {
-                val action = cursorToAction(it)
+                val action = extractNoteIdFromCursor(it)
                 actions.add(action)
             }
         }
@@ -35,13 +47,12 @@ class ActionsController(private val localDB: LocalDB) {
     private fun actionToContentValue(action: Action): ContentValues {
         return ContentValues().apply {
             put("noteId", action.noteId)
-            put("type", action.type)
         }
     }
 
-    private fun cursorToAction(cursor: android.database.Cursor): Action {
-        val noteId = cursor.getString(cursor.getColumnIndexOrThrow("noteId"))
-        val type = cursor.getString(cursor.getColumnIndexOrThrow("type"))
-        return Action(noteId, type)
+    private fun extractNoteIdFromCursor(cursor: android.database.Cursor): String {
+        return cursor.getString(cursor.getColumnIndexOrThrow("noteId"))
     }
 }
+
+

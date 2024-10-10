@@ -45,6 +45,7 @@ class MainActivity : ComponentActivity() {
         val notesRepository = SynchronizedNotes(notesApi, notesController, actionsController) { networkManager.isOnline() }
 
         val handleError: (Exception) -> Unit = { exception ->
+            exception.printStackTrace()
             Toast.makeText(this, exception.message ?: "An error occurred", Toast.LENGTH_SHORT).show()
         }
 

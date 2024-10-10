@@ -23,11 +23,11 @@ class SynchronizedNotes(
                 localNotes.insert(noteServer)
             }else {
                 val noteId = localNotes.insert(note)
-                localActions.insert(Action(noteId, "insert" ))
+                localActions.insert(Action(noteId, "inserts" ))
             }
         }catch (e : Exception){
             val noteId = localNotes.insert(note)
-            localActions.insert(Action(noteId, "insert" ))
+            localActions.insert(Action(noteId, "inserts" ))
         }
     }
 
@@ -38,11 +38,11 @@ class SynchronizedNotes(
                 localNotes.update(note)
             }else {
                 localNotes.update(note)
-                localActions.insert(Action(note.id, "update"))
+                localActions.insert(Action(note.id, "updates"))
             }
         }catch (e : Exception){
             localNotes.update(note)
-            localActions.insert(Action(note.id, "update"))
+            localActions.insert(Action(note.id, "updates"))
         }
     }
 
@@ -53,44 +53,54 @@ class SynchronizedNotes(
                 localNotes.delete(id)
             }else {
                 localNotes.delete(id)
-                localActions.insert(Action(id, "delete"))
+                localActions.insert(Action(id, "deletes"))
             }
         }catch (e : Exception){
             localNotes.delete(id)
-            localActions.insert(Action(id, "delete"))
+            localActions.insert(Action(id, "deletes"))
         }
     }
 
     suspend fun syncNotes() {
         if (isOnline()) {
-            val actions: List<Action> = localActions.getAll()
-
-            actions.forEach { action ->
+            val insertNoteIds: List<String> = localActions.getAll("inserts")
+            insertNoteIds.forEach { noteId ->
                 try {
-                    when (action.type) {
-                        "insert" -> {
-                            val note = localNotes.get(action.noteId)
-                            note?.let {
-                                val noteServer = apiNotes.create(it)
-                                localNotes.delete(action.noteId)
-                                localNotes.insert(noteServer)
-                            }
-                        }
-                        "update" -> {
-                            val note = localNotes.get(action.noteId)
-                            note?.let {
-                                apiNotes.update(it.id, it)
-                            }
-                        }
-                        "delete" -> {
-                            apiNotes.delete(action.noteId)
-                        }
+                    val note = localNotes.get(noteId)
+                    note?.let {
+                        val noteServer = apiNotes.create(it)
+                        localNotes.delete(noteId)
+                        localNotes.insert(noteServer)
                     }
-                    localActions.delete(action.noteId)
+                    localActions.delete(noteId, "inserts")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            val updateNoteIds: List<String> = localActions.getAll("updates")
+            updateNoteIds.forEach { noteId ->
+                try {
+                    val note = localNotes.get(noteId)
+                    note?.let {
+                        apiNotes.update(it.id, it)
+                    }
+                    localActions.delete(noteId, "updates")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            val deleteNoteIds: List<String> = localActions.getAll("deletes")
+            deleteNoteIds.forEach { noteId ->
+                try {
+                    apiNotes.delete(noteId)
+                    localActions.delete(noteId, "deletes")
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
         }
     }
+
 }
