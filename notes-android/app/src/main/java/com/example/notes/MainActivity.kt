@@ -9,7 +9,7 @@ import com.example.notes.data.localdb.ActionsController
 import com.example.notes.data.localdb.LocalDB
 import com.example.notes.data.localdb.NotesController
 import com.example.notes.data.api.RetrofitClient
-import com.example.notes.data.synchronized_data.SynchronizedNotes
+import com.example.notes.repository.notes.NotesRepository
 import com.example.notes.viewmodel.NotesViewModel
 
 class MainActivity : ComponentActivity() {
@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
 
         val notesApi = RetrofitClient.noteService;
 
-        val notesRepository = SynchronizedNotes(notesApi, notesController, actionsController) { networkManager.isOnline() }
+        val notesRepository = NotesRepository(notesApi, notesController, actionsController) { networkManager.isOnline() }
 
         val handleError: (Exception) -> Unit = { exception ->
             exception.printStackTrace()

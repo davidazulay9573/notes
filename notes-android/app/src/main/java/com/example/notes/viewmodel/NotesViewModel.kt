@@ -1,7 +1,7 @@
 package com.example.notes.viewmodel
 
 import com.example.notes.model.Note
-import com.example.notes.data.synchronized_data.SynchronizedNotes
+import com.example.notes.repository.notes.NotesRepository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class NotesViewModel(
-    private val notesRepository: SynchronizedNotes,
+    private val notesRepository: NotesRepository,
     private val handleError: (e: Exception) -> Unit
 ) : ViewModel() {
 
