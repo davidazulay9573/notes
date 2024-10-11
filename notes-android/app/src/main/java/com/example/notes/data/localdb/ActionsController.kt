@@ -31,16 +31,16 @@ class ActionsController(private val localDB: LocalDB) {
 
     fun getAll(table: String): List<String> {
         val db = localDB.readableDatabase
-        val actions = mutableListOf<String>()
+        val noteIds = mutableListOf<String>()
         val cursor = db.rawQuery("SELECT * FROM $table ORDER BY createdAt ASC", null)
         cursor.use {
             while (it.moveToNext()) {
-                val action = extractNoteIdFromCursor(it)
-                actions.add(action)
+                val noteId = extractNoteIdFromCursor(it)
+                noteIds.add(noteId)
             }
         }
         db.close()
-        return actions
+        return noteIds
     }
 
     /* ----------------------------- */

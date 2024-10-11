@@ -5,13 +5,11 @@ import com.example.notes.model.Note
 
 class NotesController(private val localDB: LocalDB) {
 
-    fun insert(note: Note): String {
+    fun insert(note: Note){
         val db = localDB.writableDatabase
-        val noteToInsert = if (note.id == "0") note.copy(id = generateLocalId()) else note
-        val contentValues = noteToContentValue(noteToInsert)
+        val contentValues = noteToContentValue(note)
         db.insertOrThrow("notes", null, contentValues)
         db.close()
-        return noteToInsert.id
     }
 
     fun get(noteId: String): Note? {
@@ -64,9 +62,5 @@ class NotesController(private val localDB: LocalDB) {
         val title = cursor.getString(cursor.getColumnIndexOrThrow("title"))
         val description = cursor.getString(cursor.getColumnIndexOrThrow("description"))
         return Note(id, title, description)
-    }
-
-    private fun generateLocalId(): String {
-        return "local_${System.currentTimeMillis()}"
     }
 }

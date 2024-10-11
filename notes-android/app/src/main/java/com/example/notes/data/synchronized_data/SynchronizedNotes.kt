@@ -22,11 +22,13 @@ class SynchronizedNotes(
                 val noteServer = apiNotes.create(note)
                 localNotes.insert(noteServer)
             }else {
-                val noteId = localNotes.insert(note)
+                val noteId = generateLocalId()
+                localNotes.insert(note.copy(id = noteId))
                 localActions.insert(Action(noteId, "inserts" ))
             }
         }catch (e : Exception){
-            val noteId = localNotes.insert(note)
+            val noteId = generateLocalId()
+            localNotes.insert(note.copy(id = noteId))
             localActions.insert(Action(noteId, "inserts" ))
         }
     }
@@ -53,23 +55,29 @@ class SynchronizedNotes(
                 localNotes.delete(id)
             }else {
                 localNotes.delete(id)
-                localActions.insert(Action(id, "deletes"))
                 localActions.delete(id, "inserts")
                 localActions.delete(id, "updates")
+                if (!id.startsWith("local_")){
+                    localActions.insert(Action(id, "deletes"))
+                }
+              
             }
         }catch (e : Exception){
             localNotes.delete(id)
             localActions.insert(Action(id, "deletes"))
             localActions.delete(id, "inserts")
             localActions.delete(id, "updates")
+            if (!id.startsWith("local_")){
+                localActions.insert(Action(id, "deletes"))
+            }
         }
     }
 
     suspend fun syncNotes() {
         if (isOnline()) {
-            val insertNoteIds: List<String> = localActions.getAll("inserts")
-            insertNoteIds.forEach { noteId ->
-                try {
+            try {
+                val insertNoteIds: List<String> = localActions.getAll("inserts")
+                insertNoteIds.forEach { noteId ->
                     val note = localNotes.get(noteId)
                     note?.let {
                         val noteServer = apiNotes.create(it)
@@ -77,34 +85,30 @@ class SynchronizedNotes(
                         localNotes.insert(noteServer)
                     }
                     localActions.delete(noteId, "inserts")
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
-            }
 
-            val updateNoteIds: List<String> = localActions.getAll("updates")
-            updateNoteIds.forEach { noteId ->
-                try {
+                val updateNoteIds: List<String> = localActions.getAll("updates")
+                updateNoteIds.forEach { noteId ->
                     val note = localNotes.get(noteId)
                     note?.let {
                         apiNotes.update(it.id, it)
                     }
                     localActions.delete(noteId, "updates")
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
-            }
 
-            val deleteNoteIds: List<String> = localActions.getAll("deletes")
-            deleteNoteIds.forEach { noteId ->
-                try {
+                val deleteNoteIds: List<String> = localActions.getAll("deletes")
+                deleteNoteIds.forEach { noteId ->
                     apiNotes.delete(noteId)
                     localActions.delete(noteId, "deletes")
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
+            }catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
 
+    /* ---------------------------- */
+    private fun generateLocalId(): String {
+        return "local_${System.currentTimeMillis()}"
+    }
 }

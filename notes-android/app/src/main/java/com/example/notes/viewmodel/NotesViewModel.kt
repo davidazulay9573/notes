@@ -16,6 +16,9 @@ class NotesViewModel(
     private val _notes = MutableStateFlow<List<Note>>(emptyList())
     val notes = _notes.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
     init {
         fetchNotes()
     }
@@ -24,74 +27,93 @@ class NotesViewModel(
         return _notes.value.find { it.id == id }
     }
 
-    fun add(title: String, description: String) {
+    fun add(title: String, description: String, onComplete: (() -> Unit)? = null ) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val newNote = Note(title = title, description = description)
                 notesRepository.addNote(newNote)
                 fetchNotes()
+                onComplete?.invoke()
             } catch (e: Exception) {
                 handleError(e)
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
-    fun update(note: Note) {
+    fun update(note: Note, onComplete: (() -> Unit)? = null) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 notesRepository.updateNote(note)
                 fetchNotes()
+                onComplete?.invoke()
             } catch (e: Exception) {
                 handleError(e)
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
-    fun delete(id: String) {
+    fun delete(id: String, onComplete: (() -> Unit)? = null) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 notesRepository.deleteNote(id)
                 fetchNotes()
+                onComplete?.invoke()
             } catch (e: Exception) {
                 handleError(e)
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
     fun search(searchQuery: String, searchBy: String) {
-        viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val allNotes = notesRepository.getAllNotes()
                 _notes.value = when (searchBy) {
-                    "title" -> allNotes.filter { note -> note.title.contains(searchQuery, ignoreCase = true) }
-                    "description" -> allNotes.filter { note -> note.description.contains(searchQuery, ignoreCase = true) }
+                    "title" -> allNotes.filter { it.title.contains(searchQuery, ignoreCase = true) }
+                    "description" -> allNotes.filter { it.description.contains(searchQuery, ignoreCase = true) }
                     else -> allNotes
                 }
             } catch (e: Exception) {
                 handleError(e)
+            } finally {
+                _isLoading.value = false
             }
-        }
     }
 
-    fun syncNotes() {
+    fun syncNotes(onComplete: (() -> Unit)? = null) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 notesRepository.syncNotes()
                 fetchNotes()
+                onComplete?.invoke()
             } catch (e: Exception) {
                 handleError(e)
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
     /* ------------------------------ */
     private fun fetchNotes() {
-        viewModelScope.launch {
-            try {
-                _notes.value = notesRepository.getAllNotes()
-            } catch (e: Exception) {
-                handleError(e)
-            }
+        _isLoading.value = true
+        try {
+            _notes.value = notesRepository.getAllNotes()
+        } catch (e: Exception) {
+            handleError(e)
+        } finally {
+            _isLoading.value = false
         }
     }
+
 }

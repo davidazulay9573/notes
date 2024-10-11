@@ -14,6 +14,9 @@ activityCompose = "1.9.2"
 composeBom = "2024.04.01"
 lifecycleRuntimeKtxVersion = "2.6.1"
 lifecycleViewmodelKtxVersion = "2.5.1"
+mockitoAndroidVersion = "4.2.0"
+mockitoCore = "4.2.0"
+mockitoInline = "4.2.0"
 moshi = "1.14.0"
 moshiKotlin = "1.14.0"
 navigationRuntimeKtx = "2.8.1"
@@ -25,6 +28,7 @@ roomKtx = "2.6.1"
 roomRuntime = "2.6.1"
 roomCompiler = "2.6.1"
 ksp = "1.5.15"
+junitKtx = "1.2.1"
 
 [libraries]
 androidx-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compiler" }
@@ -55,10 +59,14 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinStdlib" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx" }
 lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
+mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockitoInline" }
+mockito-mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroidVersion" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlin" }
 ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -39,9 +39,5 @@ class NetworkManager(private val context: Context, private val notesViewModel: N
             super.onAvailable(network)
             notesViewModel.syncNotes()
         }
-
-        override fun onLost(network: Network) {
-            super.onLost(network)
-        }
     }
 }
