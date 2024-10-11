@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val notesViewModel = setNotesViewModel()
+        val notesViewModel = setupNotesViewModel()
 
         networkManager = NetworkManager(this, notesViewModel)
         networkManager.registerNetworkCallback()
@@ -35,14 +35,14 @@ class MainActivity : ComponentActivity() {
     }
 
     /* ------------------- */
-    private fun setNotesViewModel(): NotesViewModel {
+    private fun setupNotesViewModel(): NotesViewModel {
         val localDB = LocalDB(this)
-        val notesController = NotesController(localDB)
-        val actionsController = ActionsController(localDB)
+        val localNotes = NotesController(localDB)
+        val localActions = ActionsController(localDB)
 
         val notesApi = RetrofitClient.noteService;
 
-        val notesRepository = NotesRepository(notesApi, notesController, actionsController) { networkManager.isOnline() }
+        val notesRepository = NotesRepository(notesApi, localNotes, localActions) { networkManager.isOnline() }
 
         val handleError: (Exception) -> Unit = { exception ->
             exception.printStackTrace()

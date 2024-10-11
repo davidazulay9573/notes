@@ -16,24 +16,10 @@ class LocalDB(context: Context) : SQLiteOpenHelper(context, "notes.db", null, 2)
                     description TEXT NOT NULL
                 )
             """)
-
             db.execSQL("""
-                CREATE TABLE inserts (
+                CREATE TABLE actions (
                     noteId TEXT PRIMARY KEY NOT NULL,
-                    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-
-            db.execSQL("""
-                CREATE TABLE updates (
-                    noteId TEXT PRIMARY KEY NOT NULL,
-                    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-
-            db.execSQL("""
-                CREATE TABLE deletes (
-                    noteId TEXT PRIMARY KEY NOT NULL,
+                    type TEXT NOT NULL,
                     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)

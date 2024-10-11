@@ -4,7 +4,7 @@ import com.example.notes.data.api.NoteService
 import com.example.notes.data.localdb.NotesController
 import com.example.notes.model.Note
 
-class OnlineNotesRepository(
+internal class OnlineNotesRepository(
     private val apiNotes: NoteService,
     private val localNotes: NotesController
 ) {
