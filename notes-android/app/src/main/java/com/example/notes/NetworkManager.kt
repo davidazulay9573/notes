@@ -5,16 +5,15 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import com.example.notes.viewmodel.NotesViewModel
 
-class NetworkManager(private val context: Context, private val notesViewModel: NotesViewModel) {
+class NetworkManager(private val context: Context) {
 
     private val connectivityManager: ConnectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     private lateinit var networkCallback: SyncNotesCallback
 
-    fun registerNetworkCallback() {
-        networkCallback = SyncNotesCallback(notesViewModel)
+    fun registerNetworkCallback(callback: () -> Unit) {
+        networkCallback = SyncNotesCallback(callback)
         val builder = NetworkRequest.Builder()
         builder.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         connectivityManager.registerNetworkCallback(builder.build(), networkCallback)
@@ -34,10 +33,10 @@ class NetworkManager(private val context: Context, private val notesViewModel: N
     }
 
     /* ------------------ */
-    private class SyncNotesCallback(private val notesViewModel: NotesViewModel) : ConnectivityManager.NetworkCallback() {
+    private class SyncNotesCallback(private val callback: () -> Unit) : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
-            notesViewModel.syncNotes()
+            callback()
         }
     }
 }

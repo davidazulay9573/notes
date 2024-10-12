@@ -7,6 +7,9 @@ interface NoteService {
     @GET("notes")
     suspend fun getAll(): List<Note>
 
+    @GET("notes/{id}")
+    suspend fun get(): Note
+
     @POST("notes")
     suspend fun create(@Body note: Note) : Note
 

@@ -21,8 +21,8 @@ class MainActivity : ComponentActivity() {
 
         val notesViewModel = setupNotesViewModel()
 
-        networkManager = NetworkManager(this, notesViewModel)
-        networkManager.registerNetworkCallback()
+        networkManager = NetworkManager(this)
+        networkManager.registerNetworkCallback { notesViewModel.syncNotes() }
 
         setContent {
             App(notesViewModel)
